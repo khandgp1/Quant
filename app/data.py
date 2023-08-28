@@ -1,12 +1,30 @@
 import pandas as pd
+import streamlit as st
 import yfinance as yf
 from sklearn.preprocessing import MinMaxScaler
 
 # Stock Data 
+@st.cache_data
 def get_stock_data(tick):
     period = 'max'
     tick_data = yf.Ticker(tick)
     return tick_data.info, tick_data.history(period=period).reset_index()
+
+def filter_date(df, end_date, start_date):
+    # Date Munge
+    df['Date'] = df['Date'].dt.tz_convert(None)
+
+    # End Date Filter
+    if end_date < df['Date'].min():
+        end_date = df['Date'].min()
+    df = df.loc[df['Date'] <= pd.to_datetime(end_date), :]
+
+    # Start Date Filter
+    if start_date != None:
+        if start_date < end_date:
+            df = df.loc[df['Date'] >= pd.to_datetime(start_date), :]
+
+    return df
 
 # Stock Normalize Data
 def normalize_data(df, col, limit=None):

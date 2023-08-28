@@ -1,6 +1,7 @@
+import pandas as pd
 import streamlit as st
 
-from data import get_stock_data, normalize_data, calc_peak_multiplier
+from data import get_stock_data, normalize_data, calc_peak_multiplier, filter_date
 from notes import get_notes
 from sidebar import sidebar
 from viz import plot_stock_data, plot_volume_data, plot_multiplier_data
@@ -8,18 +9,21 @@ from viz import plot_stock_data, plot_volume_data, plot_multiplier_data
 # Config
 st.set_page_config(layout="wide")
 
-# Initialize Chat history
-if "messages" not in st.session_state:
+# Initialize
+if 'messages' not in st.session_state:
     st.session_state.messages = []
 
+if 'time_step' not in st.session_state:
+    st.session_state.time_step = 'Day'
+
 # Sidebar
-ticker, ceiling, year_floor, year_ceiling, vol_ceiling, options = sidebar()
+ticker, end_date, start_date, ceiling, year_floor, year_ceiling, vol_ceiling, options = sidebar()
 
 # Get Data
 stock_info, stock_data = get_stock_data(ticker)
+stock_data = filter_date(stock_data, end_date, start_date)
 
 # Munge Stock Data
-stock_data['Date'] = stock_data['Date'].dt.tz_convert(None)
 stock_data['Close_Norm'] = normalize_data(stock_data, 'Close')
 stock_data['Volume_Norm'] = normalize_data(stock_data, 'Volume', limit=vol_ceiling)
 
