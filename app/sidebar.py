@@ -16,16 +16,18 @@ def sidebar():
 
     with st.sidebar.expander('Date Selection'):
 
+        placeholder_end_data = st.empty()
+
+        # Date Step Options
+        st.session_state.time_step = st.selectbox('End Date Time Step', ['Day', 'Month', 'Year', '5 Year'], on_change=update_date_range_options)
+
         # Select Date
         if st.session_state.time_step == 'Day': step = datetime.timedelta(days=1)
         if st.session_state.time_step == 'Month': step = datetime.timedelta(days=30)
         if st.session_state.time_step == 'Year': step = datetime.timedelta(days=365)
         if st.session_state.time_step == '5 Year': step = datetime.timedelta(days=365*5)
-        end_date = st.slider('End Date', min_value=datetime.date(1900, 1, 1), max_value=datetime.date.today(), value=datetime.date.today(), step=step)
-        end_date = pd.to_datetime(end_date)
-
-        # Date Step Options
-        st.session_state.time_step = st.selectbox('End Date Time Step', ['Day', 'Month', 'Year', '5 Year'])
+        st.session_state.end_date = placeholder_end_data.slider('End Date', min_value=datetime.date(1900, 1, 1), max_value=datetime.date.today(), value=st.session_state.default_end_date, step=step)
+        end_date = pd.to_datetime(st.session_state.end_date)
 
         # Range Selection
         date_range = st.selectbox('Date Range Selection', ['None', '20 Years', '10 Years', '5 Years'])
@@ -74,3 +76,6 @@ def sidebar():
             chat.write(message)
     
     return ticker, end_date, start_date, mult_ceiling, year_floor, year_ceiling, vol_ceiling, options
+
+def update_date_range_options():
+    st.session_state.default_end_date = st.session_state.end_date

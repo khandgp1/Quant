@@ -1,11 +1,9 @@
 import pandas as pd
-import streamlit as st
 import yfinance as yf
 from sklearn.preprocessing import MinMaxScaler
 
 # Stock Data 
-@st.cache_data
-def get_stock_data(tick):
+def fetch_stock_data(tick):
     period = 'max'
     tick_data = yf.Ticker(tick)
     return tick_data.info, tick_data.history(period=period).reset_index()
@@ -49,10 +47,10 @@ def calc_peak_multiplier(df, col, ceiling, year_floor, year_ceiling):
     
     # Apply Filter
     multiplier = multiplier[multiplier['Date'] >= pd.Timestamp(year_floor, 1, 1)]
-    multiplier = multiplier[multiplier['Date'] <= pd.Timestamp(year_ceiling, 1, 1)]
+    multiplier = multiplier[multiplier['Date'] <  pd.Timestamp(year_ceiling+1, 1, 1)]
     
     # Calculate Multiplier
-    multiplier[mult_col] = multiplier[mult_col].max() / multiplier[mult_col]
+    multiplier[mult_col] = multiplier[mult_col].cummax() / multiplier[mult_col]
     
     multiplier[mult_col + '_Norm'] = normalize_data(multiplier, mult_col, limit=ceiling)
     return multiplier.drop(columns=['Date'])
