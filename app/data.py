@@ -37,6 +37,17 @@ def normalize_data(df, col, limit=None):
     scaled = scaler.fit_transform(df[[col]])
     return scaled
 
+def normalize_dfs(dfs, col):
+
+    # Fit Data
+    scaler = MinMaxScaler().fit(dfs[0][[col]])
+
+    # Normalize
+    for df in dfs:
+        df[col + '_Norm'] = scaler.transform(df[[col]])
+
+    return dfs
+
 # Calculate Multiplier from Peak
 def calc_peak_multiplier(df, col, ceiling, year_floor, year_ceiling):
     

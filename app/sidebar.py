@@ -6,7 +6,7 @@ from dateutil.relativedelta import relativedelta
 def sidebar():
     
     # Stock Ticker Options
-    tickers = ('OXY', '^DJI', '^GSPC' ,'^IXIC' )
+    tickers = ('OXY', 'ENPH', '^DJI', '^GSPC' ,'^IXIC' )
 
     # Market Analysis Title 
     st.sidebar.title('Market Analysis')
@@ -19,10 +19,11 @@ def sidebar():
         placeholder_end_data = st.empty()
 
         # Date Step Options
-        st.session_state.time_step = st.selectbox('End Date Time Step', ['Day', 'Month', 'Year', '5 Year'], on_change=update_date_range_options)
+        st.session_state.time_step = st.selectbox('End Date Time Step', ['Day', 'Week', 'Month', 'Year', '5 Year'], on_change=update_date_range_options)
 
         # Select Date
         if st.session_state.time_step == 'Day': step = datetime.timedelta(days=1)
+        if st.session_state.time_step == 'Week': step = datetime.timedelta(days=7)
         if st.session_state.time_step == 'Month': step = datetime.timedelta(days=30)
         if st.session_state.time_step == 'Year': step = datetime.timedelta(days=365)
         if st.session_state.time_step == '5 Year': step = datetime.timedelta(days=365*5)
@@ -30,13 +31,14 @@ def sidebar():
         end_date = pd.to_datetime(st.session_state.end_date)
 
         # Range Selection
-        date_range = st.selectbox('Date Range Selection', ['None', '20 Years', '10 Years', '5 Years'])
+        date_range = st.selectbox('Date Range Selection', ['None', '20 Years', '10 Years', '5 Years', '50 Days'])
         if date_range == 'None':
             start_date = None
         else:
             if date_range == '20 Years': start_date = end_date - relativedelta(years=20)
             if date_range == '10 Years': start_date = end_date - relativedelta(years=10)
             if date_range == '5 Years': start_date = end_date - relativedelta(years=5)
+            if date_range == '50 Days': start_date = end_date - relativedelta(days=50)
             start_date = pd.to_datetime(start_date)
     
     with st.sidebar.expander('Multiplier Options'):

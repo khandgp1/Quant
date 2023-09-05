@@ -39,3 +39,13 @@ def plot_multiplier_data(fig, df, options):
         )
     
     return fig
+
+def plot_stock_subset_data(fig, df):
+
+    # Stock Viz
+    fig.add_trace(
+        go.Scatter(x=df['Date'], y=df['Close_Norm'], customdata=df['Close'], hovertemplate='%{customdata:$.2f}', name='Price'),
+        secondary_y=False, 
+        )
+
+    return fig
